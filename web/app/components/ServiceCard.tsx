@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import StatusIndicator from './StatusIndicator';
+import ConnectionInfoModal from './ConnectionInfoModal';
 
 interface ServiceCardProps {
   service: string;
@@ -13,6 +14,7 @@ export default function ServiceCard({ service, status, onAction }: ServiceCardPr
   const [loading, setLoading] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [logs, setLogs] = useState<string>('');
+  const [showConnectionInfo, setShowConnectionInfo] = useState(false);
 
   const handleAction = async (action: string) => {
     setLoading(true);
@@ -120,6 +122,13 @@ export default function ServiceCard({ service, status, onAction }: ServiceCardPr
         >
           {showLogs ? 'Hide Logs' : 'View Logs'}
         </button>
+        <button
+          onClick={() => setShowConnectionInfo(true)}
+          disabled={loading}
+          className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Connection Info
+        </button>
       </div>
 
       {showLogs && (
@@ -129,6 +138,12 @@ export default function ServiceCard({ service, status, onAction }: ServiceCardPr
           </pre>
         </div>
       )}
+
+      <ConnectionInfoModal
+        service={service}
+        isOpen={showConnectionInfo}
+        onClose={() => setShowConnectionInfo(false)}
+      />
     </div>
   );
 }

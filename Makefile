@@ -1,13 +1,13 @@
 .PHONY: help check-deps list-services
-.PHONY: mongodb-up mongodb-down mongodb-logs mongodb-status mongodb-restart
-.PHONY: nats-jetstream-up nats-jetstream-down nats-jetstream-logs nats-jetstream-status nats-jetstream-restart
-.PHONY: redis-up redis-down redis-logs redis-status redis-restart
-.PHONY: postgres-up postgres-down postgres-logs postgres-status postgres-restart
-.PHONY: mysql-up mysql-down mysql-logs mysql-status mysql-restart
-.PHONY: elasticsearch-up elasticsearch-down elasticsearch-logs elasticsearch-status elasticsearch-restart
-.PHONY: kafka-up kafka-down kafka-logs kafka-status kafka-restart
-.PHONY: rabbitmq-up rabbitmq-down rabbitmq-logs rabbitmq-status rabbitmq-restart
-.PHONY: all-up all-down all-status
+.PHONY: mongodb-up mongodb-down mongodb-logs mongodb-status mongodb-restart mongodb-connection-info
+.PHONY: nats-jetstream-up nats-jetstream-down nats-jetstream-logs nats-jetstream-status nats-jetstream-restart nats-jetstream-connection-info
+.PHONY: redis-up redis-down redis-logs redis-status redis-restart redis-connection-info
+.PHONY: postgres-up postgres-down postgres-logs postgres-status postgres-restart postgres-connection-info
+.PHONY: mysql-up mysql-down mysql-logs mysql-status mysql-restart mysql-connection-info
+.PHONY: elasticsearch-up elasticsearch-down elasticsearch-logs elasticsearch-status elasticsearch-restart elasticsearch-connection-info
+.PHONY: kafka-up kafka-down kafka-logs kafka-status kafka-restart kafka-connection-info
+.PHONY: rabbitmq-up rabbitmq-down rabbitmq-logs rabbitmq-status rabbitmq-restart rabbitmq-connection-info
+.PHONY: all-up all-down all-status connection-info
 
 # Default target
 .DEFAULT_GOAL := help
@@ -37,12 +37,14 @@ help: ## Show this help message
 		echo "    make $$service-restart  - Restart service"; \
 		echo "    make $$service-status   - Check service status"; \
 		echo "    make $$service-logs     - View service logs"; \
+		echo "    make $$service-connection-info - Show connection info"; \
 		echo ""; \
 	done
 	@echo "General commands:"
 	@echo "  make all-up         - Start all services"
 	@echo "  make all-down       - Stop all services"
 	@echo "  make all-status     - Check status of all services"
+	@echo "  make connection-info - Show connection info for all services"
 	@echo "  make list-services  - List all available services"
 	@echo "  make check-deps     - Check required dependencies"
 
@@ -80,6 +82,9 @@ mongodb-status:
 mongodb-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f mongodb
 
+mongodb-connection-info:
+	@./scripts/get-connection-info.sh mongodb text
+
 # NATS JetStream targets
 nats-jetstream-up: check-deps
 	@echo "$(GREEN)Starting NATS JetStream...$(NC)"
@@ -100,6 +105,9 @@ nats-jetstream-status:
 
 nats-jetstream-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f nats-jetstream
+
+nats-jetstream-connection-info:
+	@./scripts/get-connection-info.sh nats-jetstream text
 
 # Redis targets
 redis-up: check-deps
@@ -122,6 +130,9 @@ redis-status:
 redis-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f redis
 
+redis-connection-info:
+	@./scripts/get-connection-info.sh redis text
+
 # PostgreSQL targets
 postgres-up: check-deps
 	@echo "$(GREEN)Starting PostgreSQL...$(NC)"
@@ -142,6 +153,9 @@ postgres-status:
 
 postgres-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f postgres
+
+postgres-connection-info:
+	@./scripts/get-connection-info.sh postgres text
 
 # MySQL targets
 mysql-up: check-deps
@@ -164,6 +178,9 @@ mysql-status:
 mysql-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f mysql
 
+mysql-connection-info:
+	@./scripts/get-connection-info.sh mysql text
+
 # Elasticsearch targets
 elasticsearch-up: check-deps
 	@echo "$(GREEN)Starting Elasticsearch...$(NC)"
@@ -184,6 +201,9 @@ elasticsearch-status:
 
 elasticsearch-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f elasticsearch
+
+elasticsearch-connection-info:
+	@./scripts/get-connection-info.sh elasticsearch text
 
 # Kafka targets
 kafka-up: check-deps
@@ -207,6 +227,9 @@ kafka-status:
 kafka-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f kafka zookeeper
 
+kafka-connection-info:
+	@./scripts/get-connection-info.sh kafka text
+
 # RabbitMQ targets
 rabbitmq-up: check-deps
 	@echo "$(GREEN)Starting RabbitMQ...$(NC)"
@@ -228,6 +251,9 @@ rabbitmq-status:
 rabbitmq-logs:
 	@docker-compose -f $(COMPOSE_FILE) logs -f rabbitmq
 
+rabbitmq-connection-info:
+	@./scripts/get-connection-info.sh rabbitmq text
+
 # Bulk operations
 all-up: check-deps
 	@echo "$(GREEN)Starting all services...$(NC)"
@@ -242,4 +268,12 @@ all-down:
 all-status:
 	@echo "$(GREEN)Service Status:$(NC)"
 	@docker-compose -f $(COMPOSE_FILE) ps
+
+connection-info: ## Show connection info for all services
+	@echo "$(GREEN)Connection Information for All Services:$(NC)"
+	@echo ""
+	@for service in $(SERVICES); do \
+		./scripts/get-connection-info.sh $$service text; \
+		echo ""; \
+	done
 
