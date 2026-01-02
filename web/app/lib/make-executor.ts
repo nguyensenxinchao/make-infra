@@ -57,7 +57,7 @@ export async function getServiceStatus(service: string): Promise<ServiceStatus> 
     const projectRoot = getProjectRoot();
     // Use docker-compose ps directly for more reliable status
     const { stdout } = await execAsync(
-      `docker-compose -f docker-compose.yml ps ${service}`,
+      `cd services/${service} && docker-compose ps`,
       {
         cwd: projectRoot,
         timeout: 10000,
@@ -91,6 +91,21 @@ export async function getAllServicesStatus(): Promise<ServiceStatus[]> {
     'elasticsearch',
     'kafka',
     'rabbitmq',
+    'minio',
+    'prometheus',
+    'grafana',
+    'influxdb',
+    'cassandra',
+    'neo4j',
+    'memcached',
+    'consul',
+    'vault',
+    'nginx',
+    'traefik',
+    'jaeger',
+    'zipkin',
+    'clickhouse',
+    'couchdb',
   ];
 
   const statuses = await Promise.all(
@@ -107,7 +122,7 @@ export async function getServiceLogs(
   try {
     const projectRoot = getProjectRoot();
     const { stdout } = await execAsync(
-      `docker-compose -f docker-compose.yml logs --tail=${lines} ${service}`,
+      `cd services/${service} && docker-compose logs --tail=${lines}`,
       {
         cwd: projectRoot,
         timeout: 10000,

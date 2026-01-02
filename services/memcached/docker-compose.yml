@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: make-infra-memcached
+    restart: unless-stopped
+    ports:
+      - "${MEMCACHED_PORT:-11211}:11211"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "11211"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  infra-network:
+    name: make-infra-network
+    external: true

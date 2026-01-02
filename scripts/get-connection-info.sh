@@ -361,6 +361,606 @@ EOF
     fi
 }
 
+# Function to get connection info for MinIO
+get_minio_info() {
+    local api_port=9000
+    local console_port=9001
+    local username=minioadmin
+    local password=minioadmin123
+
+    if [ -f "services/minio/.env" ]; then
+        source services/minio/.env
+        api_port=${MINIO_API_PORT:-9000}
+        console_port=${MINIO_CONSOLE_PORT:-9001}
+        username=${MINIO_ROOT_USER:-minioadmin}
+        password=${MINIO_ROOT_PASSWORD:-minioadmin123}
+    fi
+
+    local endpoint="http://localhost:${api_port}"
+    local console_url="http://localhost:${console_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "minio",
+  "host": "localhost",
+  "port": ${api_port},
+  "consolePort": ${console_port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": null,
+  "connectionString": "${endpoint}",
+  "managementUrl": "${console_url}",
+  "environment": {
+    "MINIO_API_PORT": "${api_port}",
+    "MINIO_CONSOLE_PORT": "${console_port}",
+    "MINIO_ROOT_USER": "${username}",
+    "MINIO_ROOT_PASSWORD": "${password}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}MinIO Connection Info:${NC}"
+        echo -e "  Endpoint: ${BLUE}${endpoint}${NC}"
+        echo -e "  Console: ${BLUE}${console_url}${NC}"
+        echo -e "  Access Key: ${BLUE}${username}${NC}"
+        echo -e "  Secret Key: ${BLUE}${password}${NC}"
+    fi
+}
+
+# Function to get connection info for Prometheus
+get_prometheus_info() {
+    local port=9090
+
+    if [ -f "services/prometheus/.env" ]; then
+        source services/prometheus/.env
+        port=${PROMETHEUS_PORT:-9090}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "prometheus",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "PROMETHEUS_PORT": "${port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Prometheus Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+    fi
+}
+
+# Function to get connection info for Grafana
+get_grafana_info() {
+    local port=3001
+    local username=admin
+    local password=admin123
+
+    if [ -f "services/grafana/.env" ]; then
+        source services/grafana/.env
+        port=${GRAFANA_PORT:-3001}
+        username=${GRAFANA_USER:-admin}
+        password=${GRAFANA_PASSWORD:-admin123}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "grafana",
+  "host": "localhost",
+  "port": ${port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "GRAFANA_PORT": "${port}",
+    "GRAFANA_USER": "${username}",
+    "GRAFANA_PASSWORD": "${password}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Grafana Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+        echo -e "  Username: ${BLUE}${username}${NC}"
+        echo -e "  Password: ${BLUE}${password}${NC}"
+    fi
+}
+
+# Function to get connection info for InfluxDB
+get_influxdb_info() {
+    local port=8086
+    local username=admin
+    local password=admin123
+    local org=myorg
+    local bucket=mybucket
+    local token=my-super-secret-auth-token
+
+    if [ -f "services/influxdb/.env" ]; then
+        source services/influxdb/.env
+        port=${INFLUXDB_PORT:-8086}
+        username=${INFLUXDB_USERNAME:-admin}
+        password=${INFLUXDB_PASSWORD:-admin123}
+        org=${INFLUXDB_ORG:-myorg}
+        bucket=${INFLUXDB_BUCKET:-mybucket}
+        token=${INFLUXDB_TOKEN:-my-super-secret-auth-token}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "influxdb",
+  "host": "localhost",
+  "port": ${port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": "${bucket}",
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "INFLUXDB_PORT": "${port}",
+    "INFLUXDB_USERNAME": "${username}",
+    "INFLUXDB_PASSWORD": "${password}",
+    "INFLUXDB_ORG": "${org}",
+    "INFLUXDB_BUCKET": "${bucket}",
+    "INFLUXDB_TOKEN": "${token}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}InfluxDB Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+        echo -e "  Username: ${BLUE}${username}${NC}"
+        echo -e "  Password: ${BLUE}${password}${NC}"
+        echo -e "  Organization: ${BLUE}${org}${NC}"
+        echo -e "  Bucket: ${BLUE}${bucket}${NC}"
+        echo -e "  Token: ${BLUE}${token}${NC}"
+    fi
+}
+
+# Function to get connection info for Cassandra
+get_cassandra_info() {
+    local port=9042
+
+    if [ -f "services/cassandra/.env" ]; then
+        source services/cassandra/.env
+        port=${CASSANDRA_PORT:-9042}
+    fi
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "cassandra",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "localhost:${port}",
+  "managementUrl": null,
+  "environment": {
+    "CASSANDRA_PORT": "${port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Cassandra Connection Info:${NC}"
+        echo -e "  Host: ${BLUE}localhost${NC}"
+        echo -e "  Port: ${BLUE}${port}${NC}"
+        echo -e "  Connection String: ${YELLOW}localhost:${port}${NC}"
+    fi
+}
+
+# Function to get connection info for Neo4j
+get_neo4j_info() {
+    local http_port=7474
+    local bolt_port=7687
+    local username=neo4j
+    local password=neo4j123
+
+    if [ -f "services/neo4j/.env" ]; then
+        source services/neo4j/.env
+        http_port=${NEO4J_HTTP_PORT:-7474}
+        bolt_port=${NEO4J_BOLT_PORT:-7687}
+        username=${NEO4J_USER:-neo4j}
+        password=${NEO4J_PASSWORD:-neo4j123}
+    fi
+
+    local http_url="http://localhost:${http_port}"
+    local bolt_url="bolt://localhost:${bolt_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "neo4j",
+  "host": "localhost",
+  "port": ${http_port},
+  "boltPort": ${bolt_port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": null,
+  "connectionString": "${bolt_url}",
+  "managementUrl": "${http_url}",
+  "environment": {
+    "NEO4J_HTTP_PORT": "${http_port}",
+    "NEO4J_BOLT_PORT": "${bolt_port}",
+    "NEO4J_USER": "${username}",
+    "NEO4J_PASSWORD": "${password}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Neo4j Connection Info:${NC}"
+        echo -e "  HTTP URL: ${BLUE}${http_url}${NC}"
+        echo -e "  Bolt URL: ${BLUE}${bolt_url}${NC}"
+        echo -e "  Username: ${BLUE}${username}${NC}"
+        echo -e "  Password: ${BLUE}${password}${NC}"
+    fi
+}
+
+# Function to get connection info for Memcached
+get_memcached_info() {
+    local port=11211
+
+    if [ -f "services/memcached/.env" ]; then
+        source services/memcached/.env
+        port=${MEMCACHED_PORT:-11211}
+    fi
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "memcached",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "localhost:${port}",
+  "managementUrl": null,
+  "environment": {
+    "MEMCACHED_PORT": "${port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Memcached Connection Info:${NC}"
+        echo -e "  Host: ${BLUE}localhost${NC}"
+        echo -e "  Port: ${BLUE}${port}${NC}"
+        echo -e "  Connection String: ${YELLOW}localhost:${port}${NC}"
+    fi
+}
+
+# Function to get connection info for Consul
+get_consul_info() {
+    local port=8500
+
+    if [ -f "services/consul/.env" ]; then
+        source services/consul/.env
+        port=${CONSUL_PORT:-8500}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "consul",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "CONSUL_PORT": "${port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Consul Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+    fi
+}
+
+# Function to get connection info for Vault
+get_vault_info() {
+    local port=8200
+    local token=myroot
+
+    if [ -f "services/vault/.env" ]; then
+        source services/vault/.env
+        port=${VAULT_PORT:-8200}
+        token=${VAULT_TOKEN:-myroot}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "vault",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "VAULT_PORT": "${port}",
+    "VAULT_TOKEN": "${token}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Vault Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+        echo -e "  Token: ${BLUE}${token}${NC}"
+    fi
+}
+
+# Function to get connection info for Nginx
+get_nginx_info() {
+    local http_port=80
+    local https_port=443
+
+    if [ -f "services/nginx/.env" ]; then
+        source services/nginx/.env
+        http_port=${NGINX_HTTP_PORT:-80}
+        https_port=${NGINX_HTTPS_PORT:-443}
+    fi
+
+    local http_url="http://localhost:${http_port}"
+    local https_url="https://localhost:${https_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "nginx",
+  "host": "localhost",
+  "port": ${http_port},
+  "httpsPort": ${https_port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "${http_url}",
+  "managementUrl": "${http_url}",
+  "environment": {
+    "NGINX_HTTP_PORT": "${http_port}",
+    "NGINX_HTTPS_PORT": "${https_port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Nginx Connection Info:${NC}"
+        echo -e "  HTTP: ${BLUE}${http_url}${NC}"
+        echo -e "  HTTPS: ${BLUE}${https_url}${NC}"
+    fi
+}
+
+# Function to get connection info for Traefik
+get_traefik_info() {
+    local dashboard_port=8080
+    local http_port=80
+    local https_port=443
+
+    if [ -f "services/traefik/.env" ]; then
+        source services/traefik/.env
+        dashboard_port=${TRAEFIK_DASHBOARD_PORT:-8080}
+        http_port=${TRAEFIK_HTTP_PORT:-80}
+        https_port=${TRAEFIK_HTTPS_PORT:-443}
+    fi
+
+    local dashboard_url="http://localhost:${dashboard_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "traefik",
+  "host": "localhost",
+  "port": ${http_port},
+  "dashboardPort": ${dashboard_port},
+  "httpsPort": ${https_port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "http://localhost:${http_port}",
+  "managementUrl": "${dashboard_url}",
+  "environment": {
+    "TRAEFIK_DASHBOARD_PORT": "${dashboard_port}",
+    "TRAEFIK_HTTP_PORT": "${http_port}",
+    "TRAEFIK_HTTPS_PORT": "${https_port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Traefik Connection Info:${NC}"
+        echo -e "  Dashboard: ${BLUE}${dashboard_url}${NC}"
+        echo -e "  HTTP Port: ${BLUE}${http_port}${NC}"
+        echo -e "  HTTPS Port: ${BLUE}${https_port}${NC}"
+    fi
+}
+
+# Function to get connection info for Jaeger
+get_jaeger_info() {
+    local ui_port=16686
+    local http_port=14268
+
+    if [ -f "services/jaeger/.env" ]; then
+        source services/jaeger/.env
+        ui_port=${JAEGER_UI_PORT:-16686}
+        http_port=${JAEGER_HTTP_PORT:-14268}
+    fi
+
+    local ui_url="http://localhost:${ui_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "jaeger",
+  "host": "localhost",
+  "port": ${http_port},
+  "uiPort": ${ui_port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "http://localhost:${http_port}",
+  "managementUrl": "${ui_url}",
+  "environment": {
+    "JAEGER_UI_PORT": "${ui_port}",
+    "JAEGER_HTTP_PORT": "${http_port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Jaeger Connection Info:${NC}"
+        echo -e "  UI: ${BLUE}${ui_url}${NC}"
+        echo -e "  HTTP Port: ${BLUE}${http_port}${NC}"
+    fi
+}
+
+# Function to get connection info for Zipkin
+get_zipkin_info() {
+    local port=9411
+
+    if [ -f "services/zipkin/.env" ]; then
+        source services/zipkin/.env
+        port=${ZIPKIN_PORT:-9411}
+    fi
+
+    local url="http://localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "zipkin",
+  "host": "localhost",
+  "port": ${port},
+  "username": null,
+  "password": null,
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "${url}",
+  "environment": {
+    "ZIPKIN_PORT": "${port}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}Zipkin Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}${url}${NC}"
+    fi
+}
+
+# Function to get connection info for ClickHouse
+get_clickhouse_info() {
+    local http_port=8123
+    local native_port=9000
+    local username=default
+    local password=""
+
+    if [ -f "services/clickhouse/.env" ]; then
+        source services/clickhouse/.env
+        http_port=${CLICKHOUSE_HTTP_PORT:-8123}
+        native_port=${CLICKHOUSE_NATIVE_PORT:-9000}
+        username=${CLICKHOUSE_USER:-default}
+        password=${CLICKHOUSE_PASSWORD:-""}
+    fi
+
+    local http_url="http://localhost:${http_port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "clickhouse",
+  "host": "localhost",
+  "port": ${http_port},
+  "nativePort": ${native_port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": null,
+  "connectionString": "${http_url}",
+  "managementUrl": "${http_url}",
+  "environment": {
+    "CLICKHOUSE_HTTP_PORT": "${http_port}",
+    "CLICKHOUSE_NATIVE_PORT": "${native_port}",
+    "CLICKHOUSE_USER": "${username}",
+    "CLICKHOUSE_PASSWORD": "${password}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}ClickHouse Connection Info:${NC}"
+        echo -e "  HTTP URL: ${BLUE}${http_url}${NC}"
+        echo -e "  Native Port: ${BLUE}${native_port}${NC}"
+        echo -e "  Username: ${BLUE}${username}${NC}"
+        if [ -n "$password" ]; then
+            echo -e "  Password: ${BLUE}${password}${NC}"
+        fi
+    fi
+}
+
+# Function to get connection info for CouchDB
+get_couchdb_info() {
+    local port=5984
+    local username=admin
+    local password=admin123
+
+    if [ -f "services/couchdb/.env" ]; then
+        source services/couchdb/.env
+        port=${COUCHDB_PORT:-5984}
+        username=${COUCHDB_USER:-admin}
+        password=${COUCHDB_PASSWORD:-admin123}
+    fi
+
+    local url="http://${username}:${password}@localhost:${port}"
+
+    if [ "$FORMAT" = "json" ]; then
+        cat <<EOF
+{
+  "service": "couchdb",
+  "host": "localhost",
+  "port": ${port},
+  "username": "${username}",
+  "password": "${password}",
+  "database": null,
+  "connectionString": "${url}",
+  "managementUrl": "http://localhost:${port}/_utils",
+  "environment": {
+    "COUCHDB_PORT": "${port}",
+    "COUCHDB_USER": "${username}",
+    "COUCHDB_PASSWORD": "${password}"
+  }
+}
+EOF
+    else
+        echo -e "${GREEN}CouchDB Connection Info:${NC}"
+        echo -e "  URL: ${BLUE}http://localhost:${port}${NC}"
+        echo -e "  Username: ${BLUE}${username}${NC}"
+        echo -e "  Password: ${BLUE}${password}${NC}"
+        echo -e "  Connection String: ${YELLOW}${url}${NC}"
+    fi
+}
+
 # Main logic
 case "$SERVICE" in
     mongodb)
@@ -386,6 +986,51 @@ case "$SERVICE" in
         ;;
     rabbitmq)
         get_rabbitmq_info
+        ;;
+    minio)
+        get_minio_info
+        ;;
+    prometheus)
+        get_prometheus_info
+        ;;
+    grafana)
+        get_grafana_info
+        ;;
+    influxdb)
+        get_influxdb_info
+        ;;
+    cassandra)
+        get_cassandra_info
+        ;;
+    neo4j)
+        get_neo4j_info
+        ;;
+    memcached)
+        get_memcached_info
+        ;;
+    consul)
+        get_consul_info
+        ;;
+    vault)
+        get_vault_info
+        ;;
+    nginx)
+        get_nginx_info
+        ;;
+    traefik)
+        get_traefik_info
+        ;;
+    jaeger)
+        get_jaeger_info
+        ;;
+    zipkin)
+        get_zipkin_info
+        ;;
+    clickhouse)
+        get_clickhouse_info
+        ;;
+    couchdb)
+        get_couchdb_info
         ;;
     *)
         echo "Unknown service: $SERVICE" >&2

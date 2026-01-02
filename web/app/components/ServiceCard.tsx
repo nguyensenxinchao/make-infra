@@ -55,6 +55,21 @@ export default function ServiceCard({ service, status, onAction }: ServiceCardPr
       elasticsearch: 'Elasticsearch',
       kafka: 'Apache Kafka',
       rabbitmq: 'RabbitMQ',
+      minio: 'MinIO',
+      prometheus: 'Prometheus',
+      grafana: 'Grafana',
+      influxdb: 'InfluxDB',
+      cassandra: 'Cassandra',
+      neo4j: 'Neo4j',
+      memcached: 'Memcached',
+      consul: 'Consul',
+      vault: 'Vault',
+      nginx: 'Nginx',
+      traefik: 'Traefik',
+      jaeger: 'Jaeger',
+      zipkin: 'Zipkin',
+      clickhouse: 'ClickHouse',
+      couchdb: 'CouchDB',
     };
     return names[service] || service;
   };
@@ -69,6 +84,21 @@ export default function ServiceCard({ service, status, onAction }: ServiceCardPr
       elasticsearch: '🔍',
       kafka: '⚡',
       rabbitmq: '🐰',
+      minio: '📦',
+      prometheus: '📊',
+      grafana: '📈',
+      influxdb: '💾',
+      cassandra: '🗃️',
+      neo4j: '🕸️',
+      memcached: '⚡',
+      consul: '🌐',
+      vault: '🔐',
+      nginx: '🌍',
+      traefik: '🚦',
+      jaeger: '🔍',
+      zipkin: '📡',
+      clickhouse: '📊',
+      couchdb: '🛋️',
     };
     return icons[service] || '📦';
   };

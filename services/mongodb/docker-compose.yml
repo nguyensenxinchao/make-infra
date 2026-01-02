@@ -22,12 +22,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
 volumes:
   mongodb_data:
   mongodb_config:
-
 networks:
   infra-network:
+    name: make-infra-network
     external: true
-

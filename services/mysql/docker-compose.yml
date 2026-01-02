@@ -22,11 +22,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
 volumes:
   mysql_data:
-
 networks:
   infra-network:
+    name: make-infra-network
     external: true
-

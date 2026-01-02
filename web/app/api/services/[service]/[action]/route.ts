@@ -18,6 +18,21 @@ export async function POST(
       'elasticsearch',
       'kafka',
       'rabbitmq',
+      'minio',
+      'prometheus',
+      'grafana',
+      'influxdb',
+      'cassandra',
+      'neo4j',
+      'memcached',
+      'consul',
+      'vault',
+      'nginx',
+      'traefik',
+      'jaeger',
+      'zipkin',
+      'clickhouse',
+      'couchdb',
     ];
 
     const validActions = ['up', 'down', 'restart', 'status', 'logs'];

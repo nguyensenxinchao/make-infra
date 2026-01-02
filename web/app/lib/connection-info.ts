@@ -61,6 +61,21 @@ export async function getAllConnectionInfo(): Promise<ConnectionInfo[]> {
     'elasticsearch',
     'kafka',
     'rabbitmq',
+    'minio',
+    'prometheus',
+    'grafana',
+    'influxdb',
+    'cassandra',
+    'neo4j',
+    'memcached',
+    'consul',
+    'vault',
+    'nginx',
+    'traefik',
+    'jaeger',
+    'zipkin',
+    'clickhouse',
+    'couchdb',
   ];
 
   const connectionInfos = await Promise.allSettled(

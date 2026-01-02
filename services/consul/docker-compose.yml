@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  consul:
+    image: consul:1.17
+    container_name: make-infra-consul
+    restart: unless-stopped
+    ports:
+      - "${CONSUL_PORT:-8500}:8500"
+    command: agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+    volumes:
+      - consul_data:/consul/data
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8500/v1/status/leader || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  consul_data:
+networks:
+  infra-network:
+    name: make-infra-network
+    external: true

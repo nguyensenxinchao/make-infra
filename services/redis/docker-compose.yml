@@ -17,11 +17,9 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-
 volumes:
   redis_data:
-
 networks:
   infra-network:
+    name: make-infra-network
     external: true
-

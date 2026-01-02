@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  couchdb:
+    image: couchdb:3.3
+    container_name: make-infra-couchdb
+    restart: unless-stopped
+    ports:
+      - "${COUCHDB_PORT:-5984}:5984"
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER:-admin}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-admin123}
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5984/_up || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  couchdb_data:
+networks:
+  infra-network:
+    name: make-infra-network
+    external: true

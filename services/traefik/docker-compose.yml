@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.11
+    container_name: make-infra-traefik
+    restart: unless-stopped
+    ports:
+      - "${TRAEFIK_DASHBOARD_PORT:-8080}:8080"   # Web UI
+      - "${TRAEFIK_HTTP_PORT:-80}:80"       # HTTP
+      - "${TRAEFIK_HTTPS_PORT:-443}:443"     # HTTPS
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_data:/etc/traefik
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  traefik_data:
+networks:
+  infra-network:
+    name: make-infra-network
+    external: true

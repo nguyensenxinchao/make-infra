@@ -20,11 +20,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 volumes:
   rabbitmq_data:
-
 networks:
   infra-network:
+    name: make-infra-network
     external: true
-

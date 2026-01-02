@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: make-infra-cassandra
+    restart: unless-stopped
+    ports:
+      - "${CASSANDRA_PORT:-9042}:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: make-infra-cluster
+      CASSANDRA_DC: datacenter1
+      CASSANDRA_RACK: rack1
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep -q UN || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+volumes:
+  cassandra_data:
+networks:
+  infra-network:
+    name: make-infra-network
+    external: true

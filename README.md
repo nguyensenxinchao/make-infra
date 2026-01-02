@@ -13,14 +13,38 @@ Một công cụ DevOps mã nguồn mở giúp bạn cài đặt và quản lý 
 
 ## 🛠️ Services được hỗ trợ
 
+### Database & Storage
 - **MongoDB** - NoSQL document database
-- **NATS JetStream** - High-performance messaging system
-- **Redis** - In-memory data structure store
 - **PostgreSQL** - Advanced open-source relational database
 - **MySQL** - Popular relational database
+- **Redis** - In-memory data structure store
 - **Elasticsearch** - Distributed search and analytics engine
+- **Cassandra** - NoSQL database
+- **Neo4j** - Graph database
+- **CouchDB** - NoSQL database
+- **ClickHouse** - Analytical database
+- **InfluxDB** - Time-series database
+- **MinIO** - S3-compatible object storage
+
+### Messaging & Streaming
+- **NATS JetStream** - High-performance messaging system
 - **Apache Kafka** - Distributed event streaming platform
 - **RabbitMQ** - Message broker implementing AMQP
+
+### Monitoring & Observability
+- **Prometheus** - Monitoring & alerting
+- **Grafana** - Visualization & dashboards
+- **Jaeger** - Distributed tracing
+- **Zipkin** - Distributed tracing
+
+### Infrastructure & Networking
+- **Consul** - Service discovery
+- **HashiCorp Vault** - Secrets management
+- **Nginx** - Web server/reverse proxy
+- **Traefik** - Reverse proxy & load balancer
+
+### Caching
+- **Memcached** - In-memory cache
 
 ## 📋 Yêu cầu
 
@@ -231,16 +255,22 @@ cp .env.example .env
 ```
 make-infra/
 ├── Makefile                    # Main Makefile với tất cả service targets
-├── docker-compose.yml          # Docker Compose cho tất cả services
-├── services/                   # Service configurations
+├── services/                   # Service configurations (mỗi service có docker-compose.yml riêng)
 │   ├── mongodb/
+│   │   ├── docker-compose.yml  # Docker Compose riêng cho MongoDB
+│   │   ├── .env.example        # Environment variables template
+│   │   └── README.md           # Service documentation
 │   ├── nats-jetstream/
 │   ├── redis/
 │   ├── postgres/
 │   ├── mysql/
 │   ├── elasticsearch/
 │   ├── kafka/
-│   └── rabbitmq/
+│   ├── rabbitmq/
+│   ├── minio/
+│   ├── prometheus/
+│   ├── grafana/
+│   └── ... (23 services total)
 ├── web/                        # Next.js application
 │   ├── app/
 │   │   ├── page.tsx            # Dashboard chính
@@ -249,9 +279,12 @@ make-infra/
 │   └── package.json
 ├── scripts/                    # Helper scripts
 │   ├── check-dependencies.sh
-│   └── setup.sh
+│   ├── setup.sh
+│   └── get-connection-info.sh
 └── README.md
 ```
+
+**Lưu ý**: Mỗi service có `docker-compose.yml` riêng trong folder của nó. Tất cả services sử dụng chung network `make-infra-network` để có thể giao tiếp với nhau.
 
 ## 🔧 Best Practices
 

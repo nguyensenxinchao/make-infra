@@ -17,6 +17,21 @@ export async function GET(
       'elasticsearch',
       'kafka',
       'rabbitmq',
+      'minio',
+      'prometheus',
+      'grafana',
+      'influxdb',
+      'cassandra',
+      'neo4j',
+      'memcached',
+      'consul',
+      'vault',
+      'nginx',
+      'traefik',
+      'jaeger',
+      'zipkin',
+      'clickhouse',
+      'couchdb',
     ];
 
     if (!validServices.includes(service)) {
