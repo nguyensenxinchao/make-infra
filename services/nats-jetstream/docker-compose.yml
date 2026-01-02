@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  nats-jetstream:
+    image: nats:2.10-alpine
+    container_name: make-infra-nats-jetstream
+    restart: unless-stopped
+    ports:
+      - "${NATS_PORT:-4222}:4222"  # Client connections
+      - "${NATS_HTTP_PORT:-8222}:8222"  # HTTP monitoring
+      - "${NATS_CLUSTER_PORT:-6222}:6222"  # Routing port
+    command: ["-js", "-m", "8222", "-sd", "/data"]
+    volumes:
+      - nats_data:/data
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  nats_data:
+
+networks:
+  infra-network:
+    external: true
+
